@@ -15,12 +15,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : Activity() {
 
     private lateinit var mApp: MessengerApplication
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mApp = application as MessengerApplication
         if (mApp.mAuth.currentUser != null) {
-            startActivity(Intent(applicationContext, ChatActivity::class.java))
+            //mApp.UserLoggedEmail = mApp.mAuth.currentUser!!.email.toString()
+            startActivity(Intent(applicationContext, UserListActivity::class.java))
             finish()
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -30,11 +30,14 @@ class MainActivity : Activity() {
 
         signInBTN.setOnClickListener{
             signIn(emailET.text.toString(),passwordET.text.toString())
+
         }
 
         signUpBTN.setOnClickListener{
             signUp(emailET.text.toString(),passwordET.text.toString())
         }
+
+
     }
 
 
@@ -49,16 +52,16 @@ class MainActivity : Activity() {
                 val mRootReference = FirebaseDatabase.getInstance().getReference()
                 val ref1 = mRootReference.child("Users").child(userID)
 
-                ref1.child("Name").setValue(emailET.text.toString().trim())
+                ref1.child("Name").setValue(nameET.text.toString().trim())
+                ref1.child("Email").setValue(emailET.text.toString().trim())
                 ref1.child("Image_Url").setValue(null)
-                ref1.child("Email").setValue(user?.email)
-                startActivity(Intent(this, ChatActivity::class.java))
+                startActivity(Intent(this, UserListActivity::class.java))
             }
         }
     }
 
     private fun userProfile(){
-            val user = mApp.mAuth.currentUser
+        val user = mApp.mAuth.currentUser
         val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(emailET.text.toString()).build()
         user?.updateProfile(profileUpdates)?.addOnCompleteListener{
             toast("Dodano nowe konto")
@@ -70,7 +73,7 @@ class MainActivity : Activity() {
             if (task.isSuccessful) {
                 toast("Zalogowano")
                 finish()
-                startActivity(Intent(applicationContext, ChatActivity::class.java))
+                startActivity(Intent(applicationContext, UserListActivity::class.java))
             } else {
                 toast("Błąd logowania")
             }

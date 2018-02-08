@@ -15,6 +15,7 @@ class MessengerApplication : Application() {
 
     lateinit var mAuth: FirebaseAuth
     lateinit var mDatabase: FirebaseDatabase
+    //lateinit var UserLoggedEmail : String
 
     override fun onCreate() {
         super.onCreate()
