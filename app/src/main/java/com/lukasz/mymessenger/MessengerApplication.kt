@@ -5,8 +5,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-
-
 /**
  * Created by Lukasz on 2017-12-24.
 Upload Picture
@@ -15,7 +13,6 @@ class MessengerApplication : Application() {
 
     lateinit var mAuth: FirebaseAuth
     lateinit var mDatabase: FirebaseDatabase
-    //lateinit var UserLoggedEmail : String
 
     override fun onCreate() {
         super.onCreate()

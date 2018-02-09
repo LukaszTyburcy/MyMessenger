@@ -19,7 +19,6 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         mApp = application as MessengerApplication
         if (mApp.mAuth.currentUser != null) {
-            //mApp.UserLoggedEmail = mApp.mAuth.currentUser!!.email.toString()
             startActivity(Intent(applicationContext, UserListActivity::class.java))
             finish()
         }
@@ -36,8 +35,6 @@ class MainActivity : Activity() {
         signUpBTN.setOnClickListener{
             signUp(emailET.text.toString(),passwordET.text.toString())
         }
-
-
     }
 
 

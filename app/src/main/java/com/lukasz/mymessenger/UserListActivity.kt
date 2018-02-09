@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -24,9 +23,9 @@ Upload Picture
 class UserListActivity : AppCompatActivity(){
 
     private lateinit var mApp: MessengerApplication
-    lateinit var databaseRef: DatabaseReference // z mApp
+    lateinit var databaseRef: DatabaseReference
     lateinit var mLinearLayoutManager: LinearLayoutManager
-    lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<Show_Chat_Activity_Data_Items, UserList_ViewHolder>
+    lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<User, UserListViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +41,9 @@ class UserListActivity : AppCompatActivity(){
 
     override fun onStart() {
         super.onStart()
-        Toast.makeText(applicationContext, mApp.mAuth.currentUser?.email.toString(), Toast.LENGTH_SHORT).show()
         mProgressBar.visibility = ProgressBar.VISIBLE
-        mFirebaseAdapter = object : FirebaseRecyclerAdapter<Show_Chat_Activity_Data_Items,UserList_ViewHolder>(Show_Chat_Activity_Data_Items::class.java,R.layout.single_user,UserList_ViewHolder::class.java,databaseRef){
-            override fun populateViewHolder(viewHolder: UserList_ViewHolder?, model: Show_Chat_Activity_Data_Items?, position: Int) {
+        mFirebaseAdapter = object : FirebaseRecyclerAdapter<User, UserListViewHolder>(User::class.java,R.layout.single_user, UserListViewHolder::class.java,databaseRef){
+            override fun populateViewHolder(viewHolder: UserListViewHolder?, model: User?, position: Int) {
                 mProgressBar.visibility = ProgressBar.INVISIBLE
                 if (!(model?.Name.equals("Null") )) {
                     viewHolder?.Person_Name(model!!.Name)
@@ -60,7 +58,7 @@ class UserListActivity : AppCompatActivity(){
         ShowChatRecyclerView.adapter = mFirebaseAdapter
      }
 
-    class UserList_ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class UserListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val person_name: TextView
         private val person_email: TextView
        // private val person_image: ImageView
@@ -77,7 +75,6 @@ class UserListActivity : AppCompatActivity(){
 
 
         fun Person_Name(title: String) {
-            // Log.d("LOGGED", "Setting Name: ");
             person_name.text = title
         }
 
