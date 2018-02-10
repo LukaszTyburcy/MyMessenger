@@ -13,7 +13,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_chat.*
 
 /**
@@ -24,7 +27,7 @@ class UserListActivity : AppCompatActivity(){
 
     private lateinit var mApp: MessengerApplication
     lateinit var databaseRef: DatabaseReference
-    lateinit var mLinearLayoutManager: LinearLayoutManager
+    private lateinit var mLinearLayoutManager: LinearLayoutManager
     lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<User, UserListViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +45,12 @@ class UserListActivity : AppCompatActivity(){
     override fun onStart() {
         super.onStart()
         mProgressBar.visibility = ProgressBar.VISIBLE
+
         mFirebaseAdapter = object : FirebaseRecyclerAdapter<User, UserListViewHolder>(User::class.java,R.layout.single_user, UserListViewHolder::class.java,databaseRef){
             override fun populateViewHolder(viewHolder: UserListViewHolder?, model: User?, position: Int) {
+
                 mProgressBar.visibility = ProgressBar.INVISIBLE
+
                 if (!(model?.Name.equals("Null") )) {
                     viewHolder?.Person_Name(model!!.Name)
                     viewHolder?.Person_Email(model!!.Email)
@@ -52,8 +58,30 @@ class UserListActivity : AppCompatActivity(){
                 if(model?.Email.equals(mApp.mAuth.currentUser?.email.toString())){
                     viewHolder?.Layout_hide()
                 }
-            }
 
+
+                viewHolder?.itemView?.setOnClickListener {
+                    val ref : DatabaseReference = mFirebaseAdapter.getRef(position)
+                    val UserListener = object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError?) {
+
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot?) {
+                            val retrieve_name = p0?.child("Name")?.getValue(String::class.java)
+                            val retrieve_Email = p0?.child("Email")?.getValue(String::class.java)
+                            val retrieve_url = p0?.child("Image_URL")?.getValue(String::class.java)
+
+                            val intent = Intent(applicationContext, ConversationActivity::class.java)
+                            intent.putExtra("image_id", retrieve_url)
+                            intent.putExtra("email", retrieve_Email)
+                            intent.putExtra("name", retrieve_name)
+                            startActivity(intent)
+                        }
+                    }
+                    ref.addValueEventListener(UserListener)
+                }
+            }
         }
         ShowChatRecyclerView.adapter = mFirebaseAdapter
      }
@@ -61,9 +89,10 @@ class UserListActivity : AppCompatActivity(){
     class UserListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val person_name: TextView
         private val person_email: TextView
-       // private val person_image: ImageView
+       //private val person_image: ImageView
         private val layout: LinearLayout
-        internal val params: LinearLayout.LayoutParams
+        private val params: LinearLayout.LayoutParams
+
 
         init {
             person_name = itemView.findViewById(R.id.name_list)
@@ -103,6 +132,8 @@ class UserListActivity : AppCompatActivity(){
              }*/
 
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu,menu)

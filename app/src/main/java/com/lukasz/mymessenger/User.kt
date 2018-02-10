@@ -6,7 +6,7 @@ Upload Picture
  */
 data class User(val Name: String="",
                 val Email: String="",
-                val Image_Url: String=""){
+                val Image_Url: String="")
 
 
-}
+
