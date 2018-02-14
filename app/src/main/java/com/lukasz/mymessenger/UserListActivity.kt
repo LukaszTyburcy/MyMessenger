@@ -64,7 +64,7 @@ class UserListActivity : AppCompatActivity(){
                     val ref : DatabaseReference = mFirebaseAdapter.getRef(position)
                     val UserListener = object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError?) {
-
+                            //Toast.makeText(applicationContext,"Błąd", Toast.LENGTH_SHORT).show()
                         }
 
                         override fun onDataChange(p0: DataSnapshot?) {

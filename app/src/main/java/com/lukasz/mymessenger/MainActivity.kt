@@ -12,9 +12,12 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
+
+
 class MainActivity : Activity() {
 
     private lateinit var mApp: MessengerApplication
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mApp = application as MessengerApplication
@@ -35,6 +38,8 @@ class MainActivity : Activity() {
         signUpBTN.setOnClickListener{
             signUp(emailET.text.toString(),passwordET.text.toString())
         }
+
+
     }
 
 
@@ -52,6 +57,7 @@ class MainActivity : Activity() {
                 ref1.child("Name").setValue(nameET.text.toString().trim())
                 ref1.child("Email").setValue(emailET.text.toString().trim())
                 ref1.child("Image_Url").setValue(null)
+                finish()
                 startActivity(Intent(this, UserListActivity::class.java))
             }
         }

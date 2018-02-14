@@ -8,4 +8,5 @@
     <string name="loguot">Loguot</string>
     <string name="logout">logout</string>
     <string name="name">Name</string>
+    <string name="write_message">Write message</string>
 </resources>
