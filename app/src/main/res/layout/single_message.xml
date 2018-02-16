@@ -5,16 +5,18 @@
     android:background="@drawable/shape_incomming_message">
 
     <TextView
+        android:id="@+id/chatSenderTV"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:id="@+id/chatSenderTV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/messageTextColor"/>
 
     <TextView
+        android:id="@+id/chatMessageTV"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:id="@+id/chatMessageTV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/messageTextColor"/>
 </LinearLayout>

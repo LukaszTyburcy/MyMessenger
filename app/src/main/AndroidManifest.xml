@@ -19,7 +19,8 @@
         </activity>
         <activity android:name=".UserListActivity"
             android:label="List of friends"/>
-        <activity android:name=".ConversationActivity"/>
+        <activity android:name=".ConversationActivity"
+            android:label="Chat"/>
     </application>
 
 </manifest>

@@ -7,13 +7,13 @@
             android:pivotY="100%"
             android:toDegrees="0">
             <shape android:shape="rectangle">
-                <solid android:color="@color/cardview_dark_background"/>
+                <solid android:color="@color/recievedMessageColor"/>
             </shape>
         </rotate>
     </item>
     <item android:left="16dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/cardview_dark_background"/>
+            <solid android:color="@color/recievedMessageColor"/>
             <corners android:radius="4dp"/>
         </shape>
     </item>

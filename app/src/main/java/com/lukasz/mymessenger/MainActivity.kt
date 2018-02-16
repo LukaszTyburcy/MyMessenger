@@ -26,8 +26,7 @@ class MainActivity : Activity() {
             finish()
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
         signInBTN.setOnClickListener{
@@ -57,7 +56,6 @@ class MainActivity : Activity() {
                 ref1.child("Name").setValue(nameET.text.toString().trim())
                 ref1.child("Email").setValue(emailET.text.toString().trim())
                 ref1.child("Image_Url").setValue(null)
-                finish()
                 startActivity(Intent(this, UserListActivity::class.java))
             }
         }

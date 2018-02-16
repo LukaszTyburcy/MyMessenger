@@ -6,4 +6,8 @@
     <color name="white">#FFFFFF</color>
     <color name="blueWhite">#80bfff</color>
     <color name="background_color">#5180C6</color>
+    <color name="sendMessageColor">#DEF7FE</color>
+    <color name="recievedMessageColor">#96E7FC</color>
+    <color name="messageTextColor">#343B43</color>
+    <color name="chatToolbarColor">#00ADF2</color>
 </resources>

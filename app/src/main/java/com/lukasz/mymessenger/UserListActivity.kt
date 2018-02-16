@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -26,16 +23,21 @@ Upload Picture
 class UserListActivity : AppCompatActivity(){
 
     private lateinit var mApp: MessengerApplication
-    lateinit var databaseRef: DatabaseReference
+    private lateinit var databaseRef: DatabaseReference
     private lateinit var mLinearLayoutManager: LinearLayoutManager
-    lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<User, UserListViewHolder>
+    private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<User, UserListViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_chat)
+
         mApp = application as MessengerApplication
+
         mLinearLayoutManager = LinearLayoutManager(this@UserListActivity)
         ShowChatRecyclerView.layoutManager = mLinearLayoutManager
+
         databaseRef = mApp.mDatabase.getReference("Users")
         databaseRef.keepSynced(true)
 
@@ -87,21 +89,10 @@ class UserListActivity : AppCompatActivity(){
      }
 
     class UserListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val person_name: TextView
-        private val person_email: TextView
-       //private val person_image: ImageView
-        private val layout: LinearLayout
-        private val params: LinearLayout.LayoutParams
-
-
-        init {
-            person_name = itemView.findViewById(R.id.name_list)
-            person_email = itemView.findViewById(R.id.email_list)
-            //person_image = itemView.findViewById(R.id.image_list)
-            layout = itemView.findViewById(R.id.single_user_linear_layout)
-            params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
-
+        private val person_name: TextView = itemView.findViewById(R.id.name_list)
+        private val person_email: TextView = itemView.findViewById(R.id.email_list)
+        private val layout: LinearLayout = itemView.findViewById(R.id.single_user_linear_layout)
+        private val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
         fun Person_Name(title: String) {
             person_name.text = title
@@ -115,22 +106,6 @@ class UserListActivity : AppCompatActivity(){
             params.height = 0
             layout.layoutParams = params
         }
-
-
-
-        /* private fun Person_Image(url: String) {
-
-             if (url != "Null") {
-                 Glide.with(itemView.context)
-                         .load(url)
-                         .crossFade()
-                         .thumbnail(0.5f)
-                         .placeholder(R.drawable.loading)
-                         .bitmapTransform(CircleTransform(itemView.context))
-                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                         .into(person_image)
-             }*/
-
     }
 
 
