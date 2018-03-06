@@ -1,4 +1,4 @@
-package com.lukasz.mymessenger
+package com.lukasz.mymessenger.model
 
 /**
  * Created by Lukasz on 2018-01-26.

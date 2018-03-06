@@ -1,4 +1,4 @@
-package com.lukasz.mymessenger
+package com.lukasz.mymessenger.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +14,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.lukasz.mymessenger.R
+import com.lukasz.mymessenger.model.User
+import com.lukasz.mymessenger.activity.MainActivity.Application.mApp
 import kotlinx.android.synthetic.main.activity_chat.*
 
 /**
@@ -22,25 +25,15 @@ Upload Picture
  */
 class UserListActivity : AppCompatActivity(){
 
-    private lateinit var mApp: MessengerApplication
     private lateinit var databaseRef: DatabaseReference
     private lateinit var mLinearLayoutManager: LinearLayoutManager
     private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<User, UserListViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        setContentView(R.layout.activity_chat)
-
-        mApp = application as MessengerApplication
-
-        mLinearLayoutManager = LinearLayoutManager(this@UserListActivity)
-        ShowChatRecyclerView.layoutManager = mLinearLayoutManager
-
-        databaseRef = mApp.mDatabase.getReference("Users")
-        databaseRef.keepSynced(true)
-
+        setScreen()
+        setLayoutManager()
+        getDatabaseReference()
     }
 
 
@@ -48,7 +41,7 @@ class UserListActivity : AppCompatActivity(){
         super.onStart()
         mProgressBar.visibility = ProgressBar.VISIBLE
 
-        mFirebaseAdapter = object : FirebaseRecyclerAdapter<User, UserListViewHolder>(User::class.java,R.layout.single_user, UserListViewHolder::class.java,databaseRef){
+        mFirebaseAdapter = object : FirebaseRecyclerAdapter<User, UserListViewHolder>(User::class.java, R.layout.single_user, UserListViewHolder::class.java,databaseRef){
             override fun populateViewHolder(viewHolder: UserListViewHolder?, model: User?, position: Int) {
 
                 mProgressBar.visibility = ProgressBar.INVISIBLE
@@ -66,7 +59,7 @@ class UserListActivity : AppCompatActivity(){
                     val ref : DatabaseReference = mFirebaseAdapter.getRef(position)
                     val UserListener = object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError?) {
-                            //Toast.makeText(applicationContext,"Błąd", Toast.LENGTH_SHORT).show()
+
                         }
 
                         override fun onDataChange(p0: DataSnapshot?) {
@@ -108,6 +101,21 @@ class UserListActivity : AppCompatActivity(){
         }
     }
 
+    private fun setLayoutManager(){
+        mLinearLayoutManager = LinearLayoutManager(this@UserListActivity)
+        ShowChatRecyclerView.layoutManager = mLinearLayoutManager
+    }
+
+    private fun setScreen(){
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        setContentView(R.layout.activity_chat)
+    }
+
+    private fun getDatabaseReference(){
+        databaseRef = mApp.mDatabase.getReference("Users")
+        databaseRef.keepSynced(true)
+    }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -120,7 +128,7 @@ class UserListActivity : AppCompatActivity(){
         if(id == R.id.logout){
             mApp.mAuth.signOut()
             finish()
-            startActivity(Intent(this,MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }

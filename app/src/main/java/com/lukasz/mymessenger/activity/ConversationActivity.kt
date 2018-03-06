@@ -1,4 +1,4 @@
-package com.lukasz.mymessenger
+package com.lukasz.mymessenger.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -11,59 +11,52 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.lukasz.mymessenger.ConversationActivity.Sender_Name.Device_Width
-import com.lukasz.mymessenger.ConversationActivity.Sender_Name.info
-import com.lukasz.mymessenger.ConversationActivity.Sender_Name.metrics
+
+import com.lukasz.mymessenger.activity.MainActivity.Application.mApp
+import com.lukasz.mymessenger.model.Message
+import com.lukasz.mymessenger.R
+import com.lukasz.mymessenger.activity.ConversationActivity.DeviceMetrics.device_width
+import com.lukasz.mymessenger.activity.ConversationActivity.DeviceMetrics.metrics
+import com.lukasz.mymessenger.activity.ConversationActivity.SenderName.sender_info
+import com.lukasz.mymessenger.MessageNotification
 import kotlinx.android.synthetic.main.chat_conversation.*
 
 
 /**
  * Created by Lukasz on 2018-02-09.
-Upload Picture
+   Conversation Activity
  */
 class ConversationActivity : AppCompatActivity() {
 
-    private lateinit var mApp: MessengerApplication
+
     private lateinit var ref2 : DatabaseReference
     private lateinit var ref1 :DatabaseReference
     private lateinit var databaseRef: DatabaseReference
     private lateinit var mLinearLayoutManager2: LinearLayoutManager
-    private lateinit var mFirebaseAdapter2: FirebaseRecyclerAdapter<Message,ChatConversationViewHolder>
+    private lateinit var mFirebaseAdapter2: FirebaseRecyclerAdapter<Message, ChatConversationViewHolder>
+    private var myTask: MessageNotification? = null
 
-    object Sender_Name {
+    object DeviceMetrics {
         lateinit var metrics : DisplayMetrics
-        var info : String? = null
-        var Device_Width: Int = 0
+        var device_width : Int = 0
     }
+
+    object SenderName { var sender_info : String? = null }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.chat_conversation)
 
-        mApp = application as MessengerApplication
-        mApp.mDatabase.reference.keepSynced(true)
-
+        sender_info = intent.getStringExtra("name")
         val USER_ID : String = mApp.mAuth.currentUser?.email.toString().replace("@","").replace(".","")
+        val USER_NAME : String? = mApp.mAuth.currentUser?.displayName
 
-        ref1 = FirebaseDatabase.getInstance().reference.child("Chat").child(USER_ID).child(intent.getStringExtra("email").replace(".","").replace("@",""))
-        ref1.keepSynced(true)
+        getDatabaseReference(USER_ID)
+        setLayoutManager()
+        setDeviceMetrics()
 
-        ref2 = FirebaseDatabase.getInstance().reference.child("Chat").child(intent.getStringExtra("email").replace(".","").replace("@","")).child(USER_ID)
-        ref2.keepSynced(true)
-
-        info = intent.getStringExtra("name")
-        mLinearLayoutManager2 = LinearLayoutManager(this@ConversationActivity)
-        conversationRecycler.layoutManager = mLinearLayoutManager2
-        mLinearLayoutManager2.stackFromEnd = true
-
-        databaseRef = FirebaseDatabase.getInstance().reference.child("Chat")
-
-        metrics = applicationContext.resources.displayMetrics
-        Device_Width = metrics.widthPixels
 
 
         sendIV.setOnClickListener{
@@ -74,18 +67,20 @@ class ConversationActivity : AppCompatActivity() {
                 ref2.push().setValue(map)
                 messageET.text.clear()
 
-                    conversationRecycler.postDelayed({
-                        conversationRecycler.smoothScrollToPosition(conversationRecycler.adapter.itemCount-1)
-                    }, 500)
-
-                }
+                myTask = MessageNotification()
+                myTask!!.execute(USER_NAME)
+                conversationRecycler.postDelayed({
+                    conversationRecycler.smoothScrollToPosition(conversationRecycler.adapter.itemCount-1)
+                }, 500)
             }
+           myTask = null
         }
+    }
 
 
     override fun onStart() {
         super.onStart()
-        mFirebaseAdapter2 = object : FirebaseRecyclerAdapter<Message,ChatConversationViewHolder>(Message::class.java,R.layout.single_message,ChatConversationViewHolder::class.java,ref1){
+        mFirebaseAdapter2 = object : FirebaseRecyclerAdapter<Message, ChatConversationViewHolder>(Message::class.java, R.layout.single_message, ChatConversationViewHolder::class.java,ref1){
             override fun populateViewHolder(viewHolder: ChatConversationViewHolder?, model: Message?, position: Int) {
                 viewHolder?.getSender(model!!.sender)
                 viewHolder?.getMessage(model!!.message)
@@ -94,10 +89,31 @@ class ConversationActivity : AppCompatActivity() {
         conversationRecycler.adapter = mFirebaseAdapter2
     }
 
+    private fun getDatabaseReference(USER_ID : String){
+        databaseRef = FirebaseDatabase.getInstance().reference.child("Chat")
+
+        ref1 = FirebaseDatabase.getInstance().reference.child("Chat").child(USER_ID).child(intent.getStringExtra("email").replace(".","").replace("@",""))
+        ref1.keepSynced(true)
+
+        ref2 = FirebaseDatabase.getInstance().reference.child("Chat").child(intent.getStringExtra("email").replace(".","").replace("@","")).child(USER_ID)
+        ref2.keepSynced(true)
+    }
+
+    private fun setLayoutManager(){
+        setContentView(R.layout.chat_conversation)
+        mLinearLayoutManager2 = LinearLayoutManager(this@ConversationActivity)
+        conversationRecycler.layoutManager = mLinearLayoutManager2
+        mLinearLayoutManager2.stackFromEnd = true
+    }
+
+    private fun setDeviceMetrics(){
+        metrics = applicationContext.resources.displayMetrics
+        device_width = metrics.widthPixels
+    }
+
+
     class ChatConversationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-
-        private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
         private val message: TextView = itemView.findViewById(R.id.chatMessageTV)
         private val sender: TextView = itemView.findViewById(R.id.chatSenderTV)
         private val chat_image_incoming: ImageView? = null
@@ -112,8 +128,8 @@ class ConversationActivity : AppCompatActivity() {
 
         fun getSender(title: String) {
 
-            if (title.equals(mAuth.currentUser?.email.toString())) {
-                params.setMargins( (Sender_Name.Device_Width/3), 5, 10, 10)
+            if (title.equals(mApp.mAuth.currentUser?.email.toString())) {
+                params.setMargins( (device_width/3), 5, 10, 10)
                 text_params.setMargins(15, 10, 0, 5)
                 itemView.layoutParams = params
                 sender.layoutParams = text_params
@@ -126,7 +142,7 @@ class ConversationActivity : AppCompatActivity() {
             } else {
                 itemView.layoutParams = params
                 itemView.setBackgroundResource(R.drawable.shape_incomming_message)
-                sender.text = Sender_Name.info
+                sender.text = sender_info
                 chat_image_outcoming?.visibility = View.GONE
                 chat_image_incoming?.visibility = View.VISIBLE
                 sender.gravity = Gravity.LEFT
@@ -135,7 +151,7 @@ class ConversationActivity : AppCompatActivity() {
         }
 
         fun getMessage (title : String){
-            if(!sender.text.equals(ConversationActivity.Sender_Name))
+            if(!sender.text.equals(SenderName.sender_info))
             {
                 text_params.setMargins(15,10,22,15)
             }
@@ -149,6 +165,6 @@ class ConversationActivity : AppCompatActivity() {
             chat_image_incoming?.visibility = View.GONE
             chat_image_outcoming?.visibility = View.GONE
         }
-    }
 
+    }
 }

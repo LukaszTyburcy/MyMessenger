@@ -4,6 +4,7 @@ import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.onesignal.OneSignal
 
 /**
  * Created by Lukasz on 2017-12-24.
@@ -23,5 +24,11 @@ class MessengerApplication : Application() {
         if (mDatabase == null) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         }
+        
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init()
+
     }
 }
